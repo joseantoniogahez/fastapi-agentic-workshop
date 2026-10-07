@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from schemas import TicketCreate, TicketResponse, TicketStatus
 
 app = FastAPI()
 
@@ -8,8 +9,11 @@ def health():
 
 tickets = []
 
-@app.post("/tickets")
-def create_ticket(ticket: dict):
+@app.post("/tickets", response_model=TicketResponse, status_code=201)
+def create_ticket(payload: TicketCreate):
+    ticket = payload.model_dump()
+    ticket["status"] = TicketStatus.OPEN
+
     tickets.append(ticket)
     return ticket
 
