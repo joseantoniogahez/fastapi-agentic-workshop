@@ -22,4 +22,4 @@ Todo ticket nuevo comienza en `open`. Las siguientes invariantes gobiernan su ci
 
 ## Reglas
 
-El contrato rechaza campos adicionales (`extra="forbid"`) y valores de prioridad o estado fuera de los enums. Los tickets se almacenan en una lista global en memoria: se pierden al reiniciar y todavía no hay persistencia, actualización, cierre ni aislamiento entre usuarios.
+El contrato rechaza campos adicionales (`extra="forbid"`) y valores de prioridad o estado fuera de los enums. `PATCH` permite actualizar campos explícitos; un ticket cerrado no se puede editar, reabrir ni eliminar. El borrado es lógico y lo excluye de consultas operativas. Los tickets se almacenan en memoria y se pierden al reiniciar; no hay todavía persistencia ni aislamiento entre usuarios.

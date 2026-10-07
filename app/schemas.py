@@ -25,3 +25,11 @@ class TicketResponse(BaseModel):
     description: str
     priority: Priority
     status: TicketStatus
+
+
+class TicketUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    title: str | None = Field(default=None, min_length=3, max_length=100)
+    description: str | None = Field(default=None, max_length=2000)
+    priority: Priority | None = None
+    status: TicketStatus | None = None

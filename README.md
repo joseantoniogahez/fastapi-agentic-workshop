@@ -54,7 +54,7 @@ Desde la raíz del repositorio:
 uv run fastapi dev app/main.py
 ```
 
-La API queda disponible en <http://127.0.0.1:8000>. La documentación interactiva está en <http://127.0.0.1:8000/docs>, y el esquema OpenAPI en <http://127.0.0.1:8000/openapi.json>.
+La API queda disponible en <http://127.0.0.1:8000>. La documentación interactiva está en <http://127.0.0.1:8000/docs>, y el esquema OpenAPI en <http://127.0.0.1:8000/openapi.json>. La colección está en `/api/v1/tickets` y ofrece `POST`, `GET`, `GET /{id}`, `PATCH /{id}` y `DELETE /{id}`. El listado admite `status`, `priority`, `limit` y `offset`.
 
 ## Pruebas manuales
 
@@ -69,10 +69,10 @@ Respuesta: `{\"status\":\"ok\"}`
 Consulta los tickets:
 
 ```bash
-curl http://127.0.0.1:8000/tickets
+curl http://127.0.0.1:8000/api/v1/tickets
 ```
 
-La creación de tickets está definida con validación de entrada. En el estado actual, `POST /tickets` aún no genera el campo `id` que exige `TicketResponse`; ese flujo puede producir un error de validación hasta que se implemente la asignación de identificadores.
+El almacenamiento es en memoria: los tickets se pierden al reiniciar el proceso. Los tickets cerrados no se pueden editar ni eliminar; eliminar un ticket abierto realiza soft delete.
 
 ## Estructura
 
