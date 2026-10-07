@@ -1,6 +1,6 @@
 # SupportDesk API
 
-SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. El repositorio se encuentra en una etapa temprana: los tickets viven en memoria y todavía no hay persistencia, autenticación ni suite de pruebas automatizadas.
+SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La aplicación ofrece health check y creación de tickets; estos se persisten en SQLite. Todavía no hay autenticación ni suite de pruebas automatizadas.
 
 ## Requisitos
 
@@ -69,17 +69,24 @@ Respuesta: `{\"status\":\"ok\"}`
 Consulta los tickets:
 
 ```bash
-curl http://127.0.0.1:8000/tickets
+curl -X POST http://127.0.0.1:8000/api/v1/tickets `
+  -H "Content-Type: application/json" `
+  -d '{"title":"No puedo iniciar sesión","description":"El portal rechaza mi contraseña"}'
 ```
 
-La creación de tickets está definida con validación de entrada. En el estado actual, `POST /tickets` aún no genera el campo `id` que exige `TicketResponse`; ese flujo puede producir un error de validación hasta que se implemente la asignación de identificadores.
+La respuesta de creación tiene estado `201 Created` e incluye el `id` generado, la prioridad `medium` y el estado inicial `open`. Para otros ejemplos y las reglas del contrato, consulta [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md).
 
 ## Estructura
 
 ```text
 app/
-├── main.py       # aplicación FastAPI y endpoints
-└── schemas.py    # enums y modelos Pydantic
+├── main.py       # aplicación FastAPI y health check
+├── router.py     # endpoint HTTP de tickets
+├── services.py  # regla de creación y estado inicial
+├── repositories.py # persistencia de tickets
+├── models.py    # modelo SQLAlchemy
+├── database.py  # motor y sesión SQLite
+└── schemas.py   # enums y modelos Pydantic
 docs/             # documentación de dominio, arquitectura, API y curso
 ```
 
