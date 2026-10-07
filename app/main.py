@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from schemas import TicketCreate, TicketResponse, TicketStatus
+from router import router
 
 app = FastAPI()
 
@@ -7,16 +7,5 @@ app = FastAPI()
 def health():
     return {"status": "ok"}
 
-tickets = []
 
-@app.post("/tickets", response_model=TicketResponse, status_code=201)
-def create_ticket(payload: TicketCreate):
-    ticket = payload.model_dump()
-    ticket["status"] = TicketStatus.OPEN
-
-    tickets.append(ticket)
-    return ticket
-
-@app.get("/tickets")
-def list_tickets():
-    return tickets
+app.include_router(router)
