@@ -19,6 +19,14 @@ class TicketCreate(BaseModel):
     description: str = Field(max_length=2000)
     priority: Priority = Priority.MEDIUM
 
+
+class TicketUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    title: str | None = Field(default=None, min_length=3, max_length=100)
+    description: str | None = Field(default=None, max_length=2000)
+    priority: Priority | None = None
+
+
 class TicketResponse(BaseModel):
     id: int
     title: str
