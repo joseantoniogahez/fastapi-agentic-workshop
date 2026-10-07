@@ -1,6 +1,6 @@
-# FastAPI Agentic Workshop
+# SupportDesk API
 
-Proyecto base para experimentar con APIs construidas con [FastAPI](https://fastapi.tiangolo.com/).
+SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. El repositorio se encuentra en una etapa temprana: los tickets viven en memoria y todavía no hay persistencia, autenticación ni suite de pruebas automatizadas.
 
 ## Requisitos
 
@@ -15,88 +15,74 @@ python -m pip install uv
 
 ## Instalación
 
-1. Clona el repositorio y entra en la carpeta del proyecto:
+```bash
+git clone https://github.com/joseantoniogahez/fastapi-agentic-workshop
+cd fastapi-agentic-workshop
+python -m venv .venv
+```
 
-   ```bash
-   git clone https://github.com/joseantoniogahez/fastapi-agentic-workshop
-   cd fastapi-agentic-workshop
-   ```
+Activa el entorno virtual:
 
-2. Crea un entorno virtual:
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
 
-   **Windows (PowerShell):**
+```bash
+# macOS/Linux
+source .venv/bin/activate
+```
 
-   ```powershell
-   python -m venv .venv
-   .\\.venv\\Scripts\\Activate.ps1
-   ```
+Instala las dependencias con `uv`:
 
-   **macOS/Linux:**
+```bash
+python -m pip install uv
+uv sync
+```
 
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
+Como alternativa, usando `pip`:
 
-3. Sincroniza las dependencias con `uv`:
+```bash
+python -m pip install -r requirements.txt
+```
 
-   ```shell
-   uv sync
-   ```
+## Ejecución
 
-## Ejecutar la aplicación
+Desde la raíz del repositorio:
 
-Inicia el servidor de desarrollo desde la raíz del proyecto:
-
-```shell
+```bash
 uv run fastapi dev app/main.py
 ```
 
-La API estará disponible en <http://127.0.0.1:8000>.
+La API queda disponible en <http://127.0.0.1:8000>. La documentación interactiva está en <http://127.0.0.1:8000/docs>, y el esquema OpenAPI en <http://127.0.0.1:8000/openapi.json>.
 
-## Endpoint disponible
+## Pruebas manuales
 
-### `GET /health`
-
-Comprueba el estado de la aplicación.
+Comprueba que el servicio está vivo:
 
 ```bash
 curl http://127.0.0.1:8000/health
 ```
 
-Respuesta esperada:
+Respuesta: `{\"status\":\"ok\"}`
 
-```json
-{
-  "status": "ok"
-}
-```
-
-## Documentación interactiva
-
-Con el servidor ejecutándose, visita:
-
-- Swagger UI: <http://127.0.0.1:8000/docs>
-- OpenAPI JSON: <http://127.0.0.1:8000/openapi.json>
-- ReDoc: <http://127.0.0.1:8000/redoc>
-
-## Estructura del proyecto
-
-```text
-.
-├── app/
-│   └── main.py          # Aplicación y rutas de FastAPI
-├── pyproject.toml       # Configuración y dependencias para uv
-├── uv.lock              # Versiones exactas (se genera con uv sync)
-├── requirements.txt     # Dependencias para instalaciones con pip
-├── LICENSE
-└── README.md
-```
-
-## Desarrollo
-
-Para salir del entorno virtual cuando termines:
+Consulta los tickets:
 
 ```bash
-deactivate
+curl http://127.0.0.1:8000/tickets
 ```
+
+La creación de tickets está definida con validación de entrada. En el estado actual, `POST /tickets` aún no genera el campo `id` que exige `TicketResponse`; ese flujo puede producir un error de validación hasta que se implemente la asignación de identificadores.
+
+## Estructura
+
+```text
+app/
+├── main.py       # aplicación FastAPI y endpoints
+└── schemas.py    # enums y modelos Pydantic
+docs/             # documentación de dominio, arquitectura, API y curso
+```
+
+Consulta [docs/DOMAIN.md](docs/DOMAIN.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md) y [docs/COURSE.md](docs/COURSE.md).
+
+Para salir del entorno virtual: `deactivate`.
