@@ -34,6 +34,22 @@ def test_get_created_ticket(client):
     assert response.json() == created
 
 
+def test_new_client_starts_with_empty_repository(client_factory):
+    first_client = client_factory()
+    created = first_client.post(
+        "/api/v1/tickets",
+        json={
+            "title": "Isolated ticket",
+            "description": "Only in the first fake repository",
+        },
+    ).json()
+
+    second_client = client_factory()
+    response = second_client.get(f"/api/v1/tickets/{created['id']}")
+
+    assert response.status_code == 404
+
+
 def test_get_missing_ticket_returns_404(client):
     response = client.get("/api/v1/tickets/999")
 

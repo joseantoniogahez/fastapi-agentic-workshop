@@ -1,6 +1,6 @@
 # Arquitectura de SupportDesk
 
-SupportDesk es una aplicación pequeña construida con FastAPI. `app/main.py` crea la aplicación, registra `GET /health`, incluye el router de tickets y traduce `TicketNotFound` a HTTP `404` y `TicketAlreadyClosed` a `409`. El router define las rutas HTTP; el servicio aplica las reglas del ciclo de vida; el repositorio persiste y consulta tickets en SQLite mediante SQLAlchemy. Los esquemas Pydantic están en `app/schemas.py`.
+SupportDesk es una aplicación pequeña construida con FastAPI. `app/main.py` crea la aplicación, registra `GET /health`, incluye el router de tickets y traduce `TicketNotFound` a HTTP `404` y `TicketAlreadyClosed` a `409`. El lifespan de la app de producción crea las tablas al iniciar; `create_app(manage_database=False)` permite construir una app de pruebas sin ese acceso a SQLite. El router define las rutas HTTP y compone mediante `Depends` las dependencias de sesión, repositorio y servicio; el servicio aplica las reglas del ciclo de vida; el repositorio persiste y consulta tickets en SQLite mediante SQLAlchemy. Los esquemas Pydantic están en `app/schemas.py`.
 
 ```text
 Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
@@ -28,4 +28,4 @@ Pydantic/FastAPI responde `422` cuando la entrada no cumple el esquema. `TicketN
 
 ## Límites actuales
 
-Están implementados `GET /health`, `POST /api/v1/tickets`, `GET` y `PATCH /api/v1/tickets/{ticket_id}`, `POST /api/v1/tickets/{ticket_id}/close` y `DELETE /api/v1/tickets/{ticket_id}`. Las rutas abren y cierran la sesión directamente; aunque `get_session()` existe en `app/database.py`, actualmente no se inyecta en ellas. No hay endpoint de listado, integración con IA, autenticación, autorización ni observabilidad. Las pruebas están organizadas por servicio, API y repositorio. Las reglas del ciclo de vida están en [DOMAIN.md](DOMAIN.md).
+Están implementados `GET /health`, `POST /api/v1/tickets`, `GET` y `PATCH /api/v1/tickets/{ticket_id}`, `POST /api/v1/tickets/{ticket_id}/close` y `DELETE /api/v1/tickets/{ticket_id}`. FastAPI inyecta la sesión por petición y reutiliza la misma instancia de servicio entre dependencias de esa petición. No hay endpoint de listado, integración con IA, autenticación, autorización ni observabilidad. Las pruebas están organizadas por servicio, API y repositorio. Las reglas del ciclo de vida están en [DOMAIN.md](DOMAIN.md).
