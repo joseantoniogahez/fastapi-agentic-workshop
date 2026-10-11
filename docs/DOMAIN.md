@@ -12,17 +12,13 @@ Un ticket representa una solicitud de soporte. Tiene un `id` entero generado por
 | `in_progress` | Ticket que está siendo atendido. |
 | `closed` | Ticket cuya atención terminó. |
 
-Todo ticket nuevo comienza en `open`. El contrato de creación no permite enviar `status`; lo asigna el servicio.
+Todo ticket nuevo comienza en `open`. El contrato de creación no permite enviar `status`; lo asigna el servicio. La ruta `POST /api/v1/tickets/{id}/close` cierra un ticket.
 
-## Persistencia y alcance actual
+## Persistencia y reglas
 
-Los tickets se guardan en la tabla `tickets` de SQLite mediante SQLAlchemy. La base de datos se configura en `app/database.py` como `supportdesk.db` en el directorio de ejecución. Actualmente se puede crear un ticket y consultarlo por ID. No hay listados, edición, cierre, borrado, autenticación, aislamiento entre usuarios.
+Los tickets se guardan en SQLite mediante SQLAlchemy. Se pueden crear, consultar, editar, cerrar y eliminar lógicamente; no hay endpoint de listado, autenticación ni aislamiento entre usuarios. El repositorio oculta los tickets eliminados en las consultas operativas.
 
-## Reglas para futuras operaciones
-
-Estas reglas describen el comportamiento esperado cuando se implementen las operaciones correspondientes; no implican que esos endpoints existan hoy:
-
-1. Un ticket cerrado no se puede editar ni volver a abrir.
+1. Un ticket cerrado no se puede editar ni reabrir.
 2. `DELETE` realiza soft delete, nunca borrado físico, y no permite eliminar tickets cerrados.
-3. Los tickets eliminados quedan ocultos para búsquedas y lecturas operativas. Sólo se incluyen en operaciones explícitas de histórico o análisis.
-4. Los tickets cerrados se conservan como histórico y podrían servir como fuente de sugerencias para una futura función de IA.
+3. Los tickets eliminados quedan ocultos en lecturas operativas; se conservan en la base de datos para histórico.
+4. Los tickets cerrados se conservan como histórico y podrían servir como fuente para una futura función de IA.
