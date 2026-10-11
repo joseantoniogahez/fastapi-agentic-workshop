@@ -1,6 +1,6 @@
 # Arquitectura de SupportDesk
 
-La aplicación es un monolito FastAPI pequeño. `app/main.py` crea la aplicación, registra `/health` e incluye el router de tickets. El router define el contrato HTTP; service y repository coordinan la creación, y SQLAlchemy persiste los tickets en SQLite. Los contratos HTTP están en `app/schemas.py`.
+SupportDesk es una aplicación pequeña construida con FastAPI. `app/main.py` crea la aplicación, registra `GET /health`, incluye el router de tickets y traduce `TicketNotFound` a HTTP `404`. El router define las rutas HTTP; el servicio aplica la lógica de creación y consulta; el repositorio accede a SQLite mediante SQLAlchemy. Los esquemas Pydantic están en `app/schemas.py`.
 
 ```text
 Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
@@ -10,19 +10,22 @@ Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
                              Pydantic (schemas.py)
 ```
 
-`schemas.py` define `Priority`, `TicketStatus`, `TicketCreate` y `TicketResponse`. FastAPI convierte JSON, valida, serializa y genera OpenAPI. `POST /api/v1/tickets` valida la entrada, el service asigna `open`, el repository inserta y confirma la transacción, y la base de datos devuelve el identificador generado.
+`schemas.py` define `Priority`, `TicketStatus`, `TicketCreate` y `TicketResponse`. FastAPI valida el JSON de entrada, serializa las respuestas y genera OpenAPI. Al crear, el servicio asigna `open`; el repositorio inserta el ticket, confirma la transacción y actualiza el objeto con el ID generado. Al consultar por ID, el servicio lanza `TicketNotFound` cuando el repositorio no encuentra el ticket.
 
 ## Responsabilidades por capa
 
-Cada capa tiene una responsabilidad concreta:
+| Capa | Responsabilidad actual |
+|---|---|
+| Router | Define rutas, parámetros HTTP, códigos de estado y modelos de respuesta. |
+| Service | Coordina las operaciones y asigna el estado inicial del ticket. |
+| Repository | Inserta y busca tickets en la sesión SQLAlchemy. |
+| Database | Configura el motor SQLite, las sesiones y la creación inicial de tablas. |
+| Schemas | Define enums y modelos Pydantic para entrada y salida. |
 
-| Capa | Responsabilidad | Ejemplo |
-|---|---|---|
-| Router | Manejar HTTP y definir contratos: body, path y status code. | Recibir `POST /api/v1/tickets` y responder con el modelo declarado. |
-| Service | Aplicar reglas del negocio. | Rechazar la edición de un ticket cerrado. |
-| Repository | Leer y guardar datos. | Buscar un ticket e insertar o actualizar sus datos. |
-| Database | Crear y mantener la conexión y el esquema persistente. | Crear la tabla `tickets` en SQLite. |
+## Errores
 
-La implementación actual cubre sólo creación de tickets: todavía no ofrece listados, lecturas por identificador, edición ni borrado. `get_session()` está disponible en `app/database.py`, pero el router abre la sesión directamente con `Session(engine)`; no usa esa función como dependencia FastAPI.
+Pydantic/FastAPI responde `422` cuando la entrada no cumple el esquema. `TicketNotFound` se define en `app/services.py` y el manejador de `app/main.py` responde `404` con `{"detail": "Ticket <id> not found"}`. Los errores inesperados conservan el manejo predeterminado de FastAPI.
 
-La autenticación, autorización, observabilidad y pruebas siguen pendientes. Si se agregan operaciones de edición o borrado, la capa de dominio deberá aplicar las invariantes descritas en `DOMAIN.md`.
+## Límites actuales
+
+Están implementados `GET /health`, `POST /api/v1/tickets` y `GET /api/v1/tickets/{ticket_id}`. Ambas rutas de tickets abren y cierran la sesión directamente; aunque `get_session()` existe en `app/database.py`, actualmente no se inyecta en las rutas. No hay listados, edición, borrado, integración con IA, autenticación, autorización, observabilidad ni pruebas automatizadas. Las reglas previstas para el ciclo de vida están en [DOMAIN.md](DOMAIN.md).

@@ -2,6 +2,10 @@ from models import Ticket
 from schemas import TicketCreate, TicketStatus
 
 
+class TicketNotFound(Exception):
+    pass
+
+
 class TicketService:
     def __init__(self, repository):
         self.repository = repository
@@ -12,3 +16,9 @@ class TicketService:
             status=TicketStatus.OPEN,
         )
         return self.repository.create(ticket)
+
+    def get(self, ticket_id: int):
+        ticket = self.repository.get(ticket_id)
+        if ticket is None:
+            raise TicketNotFound(ticket_id)
+        return ticket

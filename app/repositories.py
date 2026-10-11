@@ -11,3 +11,6 @@ class TicketRepository:
         self.session.commit()
         self.session.refresh(ticket)
         return ticket
+
+    def get(self, ticket_id: int):
+        return self.session.get(Ticket, ticket_id)

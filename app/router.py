@@ -1,5 +1,5 @@
 from database import Session, engine, get_session
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from repositories import TicketRepository
 from schemas import TicketCreate, TicketResponse
 from services import TicketService
@@ -12,3 +12,10 @@ def create_ticket(payload: TicketCreate):
     with Session(engine) as session:
         ticket_service = TicketService(TicketRepository(session))
         return ticket_service.create(payload)
+
+
+@router.get("/{ticket_id}", response_model=TicketResponse)
+def get_ticket(ticket_id: int):
+    with Session(engine) as session:
+        ticket_service = TicketService(TicketRepository(session))
+        return ticket_service.get(ticket_id)
