@@ -1,6 +1,6 @@
 # SupportDesk API
 
-SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La aplicación ofrece health check y creación de tickets; estos se persisten en SQLite. Todavía no hay autenticación ni suite de pruebas automatizadas.
+SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La aplicación ofrece health check y creación de tickets; estos se persisten en SQLite. Incluye un test de comportamiento para la creación de tickets. Todavía no hay autenticación.
 
 ## Requisitos
 

@@ -12,11 +12,11 @@ Un ticket representa una solicitud de soporte. Tiene un `id` entero generado por
 | `in_progress` | Ticket que está siendo atendido. |
 | `closed` | Ticket cuya atención terminó. |
 
-Todo ticket nuevo comienza en `open`. El contrato de creación no permite enviar `status`; lo asigna el servicio. Pydantic rechaza campos adicionales y valores de prioridad fuera del enum.
+Todo ticket nuevo comienza en `open`. El contrato de creación no permite enviar `status`; lo asigna el servicio.
 
 ## Persistencia y alcance actual
 
-Los tickets se guardan en la tabla `tickets` de SQLite mediante SQLAlchemy. La base de datos se configura en `app/database.py` como `supportdesk.db` en el directorio de ejecución. Actualmente se puede crear un ticket y consultarlo por ID. No hay listados, edición, cierre, borrado, autenticación, aislamiento entre usuarios ni pruebas automatizadas.
+Los tickets se guardan en la tabla `tickets` de SQLite mediante SQLAlchemy. La base de datos se configura en `app/database.py` como `supportdesk.db` en el directorio de ejecución. Actualmente se puede crear un ticket y consultarlo por ID. No hay listados, edición, cierre, borrado, autenticación, aislamiento entre usuarios.
 
 ## Reglas para futuras operaciones
 
