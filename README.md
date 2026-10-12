@@ -1,6 +1,6 @@
 # SupportDesk API
 
-SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La aplicación ofrece health check y permite crear, consultar, editar, cerrar y eliminar tickets; estos se persisten en SQLite. Incluye pruebas de servicio, API y repositorio. Todavía no hay autenticación.
+SupportDesk es una API de soporte construida con FastAPI. Permite crear, listar, consultar, editar, cerrar, eliminar lógicamente y analizar tickets; los tickets se persisten en SQLite. Incluye pruebas de servicio, API y repositorio. Todavía no hay autenticación.
 
 ## Requisitos
 
@@ -86,7 +86,7 @@ curl http://127.0.0.1:8000/api/v1/tickets/1
 
 La consulta devuelve `200 OK`, o `404 Not Found` si el ID no existe. Los tickets permanecen en `supportdesk.db` en el directorio desde el que se inicia la aplicación.
 
-La API también permite editar con `PATCH`, cerrar con `POST /api/v1/tickets/{id}/close` y eliminar con `DELETE` (borrado lógico). Los tickets cerrados no se pueden editar ni eliminar; consulta [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md) para el contrato completo.
+La API también permite listar tickets activos, editar con `PATCH`, cerrar con `POST /api/v1/tickets/{id}/close`, eliminar con `DELETE` (borrado lógico) y analizarlos con Gemini. Los tickets cerrados no se pueden editar ni eliminar; consulta [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md) para el contrato completo.
 
 ## Estructura
 
@@ -99,9 +99,9 @@ app/
 ├── models.py      # modelo SQLAlchemy
 ├── database.py    # motor y sesiones SQLite
 └── schemas.py     # enums y modelos Pydantic
-docs/             # documentación de dominio, arquitectura, API y curso
+docs/             # documentación de la aplicación, dominio, arquitectura y API
 ```
 
-Consulta [docs/DOMAIN.md](docs/DOMAIN.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md) y [docs/COURSE.md](docs/COURSE.md).
+Consulta [docs/APP_OVERVIEW.md](docs/APP_OVERVIEW.md), [docs/DOMAIN.md](docs/DOMAIN.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) y [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md).
 
 Para salir del entorno virtual: `deactivate`.

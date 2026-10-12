@@ -17,8 +17,8 @@ Empieza aquí. Abre sólo la referencia que corresponda al cambio solicitado; no
 
 ## Estado del proyecto
 
-SupportDesk es un taller, no un despliegue de producción configurado. La aplicación usa SQLite en `supportdesk.db`, crea tablas con `Base.metadata.create_all` al arrancar, carga `.env` y lee `GEMINI_API_KEY` cuando se solicita análisis. Actualmente no hay autenticación, autorización, migraciones, política de backup, logs operativos, CI ni configuración de despliegue/rollback declaradas en el repositorio.
+SupportDesk es una aplicación FastAPI. Usa SQLite en `supportdesk.db`, crea tablas con `Base.metadata.create_all` al arrancar, carga `.env` y lee `GEMINI_API_KEY` cuando se solicita análisis. Actualmente no hay autenticación, autorización, migraciones, política de backup, logs operativos, CI ni configuración de despliegue/rollback declaradas en el repositorio.
 
 Trata las referencias de producción como criterios para planear y revisar trabajo. No presentes recomendaciones como capacidades ya implementadas. Antes de elegir proveedor, formato de secretos, política de retención, RPO/RTO, identidad de usuarios o estrategia de despliegue, busca una decisión del proyecto; si falta, documenta la pregunta y limita el cambio a lo que puede resolverse sin inventarla.
 
-Para cambios de código, sigue además la lección vigente, `docs/API_GUIDELINES.md` si cambia la API, las pruebas separadas por capa indicadas en `AGENTS.md`, y la skill del taller. Mantén documentación mínima: actualiza sólo la referencia cuyo comportamiento o decisión haya cambiado.
+Para cambios de código, sigue `docs/API_GUIDELINES.md` si cambia la API, las pruebas separadas por capa indicadas en `AGENTS.md` y la skill del repositorio. Mantén documentación mínima: actualiza sólo la referencia cuyo comportamiento o decisión haya cambiado.

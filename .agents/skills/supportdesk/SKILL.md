@@ -1,17 +1,17 @@
 ---
-name: fastapi-workshop
-description: Implement and review this FastAPI workshop.
+name: supportdesk
+description: Implement and review the SupportDesk FastAPI application.
 ---
 
 # Workflow
 
 Start with `docs/agent-guide.md` to find the smallest relevant context. Read one linked production reference only when the task concerns that area.
 
-Read the current lesson and API guidelines.
+Read `docs/APP_OVERVIEW.md` and the API guidelines.
 
 Use Pydantic v2 conventions.
 
-Keep examples small and explainable.
+Keep implementation changes focused and maintainable.
 
 Check behavior with the available tests.
 

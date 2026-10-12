@@ -36,6 +36,23 @@ def test_get_created_ticket(client):
     assert response.json() == created
 
 
+def test_list_tickets_returns_active_tickets(client):
+    first = client.post(
+        "/api/v1/tickets",
+        json={"title": "First ticket", "description": "Details"},
+    ).json()
+    second = client.post(
+        "/api/v1/tickets",
+        json={"title": "Second ticket", "description": "Details"},
+    ).json()
+    client.delete(f"/api/v1/tickets/{first['id']}")
+
+    response = client.get("/api/v1/tickets")
+
+    assert response.status_code == 200
+    assert response.json() == [second]
+
+
 def test_new_client_starts_with_empty_repository(client_factory):
     first_client = client_factory()
     created = first_client.post(

@@ -19,6 +19,9 @@ class FakeTicketRepository:
             return self.ticket
         return None
 
+    def list(self):
+        return [self.ticket] if self.ticket is not None else []
+
 
 class FakeAIService:
     def __init__(self, result):
@@ -41,6 +44,19 @@ def test_get_returns_ticket_from_repository():
     service = TicketService(FakeTicketRepository(ticket))
 
     assert service.get(7) is ticket
+
+
+def test_list_returns_repository_tickets():
+    ticket = Ticket(
+        id=7,
+        title="A ticket",
+        description="Details",
+        priority="medium",
+        status="open",
+    )
+    service = TicketService(FakeTicketRepository(ticket))
+
+    assert service.list() == [ticket]
 
 
 def test_get_missing_ticket_raises_domain_error():
