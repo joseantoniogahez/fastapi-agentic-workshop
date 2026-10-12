@@ -26,8 +26,15 @@ class TicketUpdate(BaseModel):
     priority: Priority | None = None
 
 class TicketResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     description: str
     priority: Priority
     status: TicketStatus
+
+class TicketAnalysis(BaseModel):
+    category: str
+    suggested_priority: Priority
+    summary: str = Field(max_length=500)
