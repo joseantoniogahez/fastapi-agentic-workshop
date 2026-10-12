@@ -8,10 +8,12 @@ class Priority(StrEnum):
     MEDIUM = "medium"
     HIGH = "high"
 
+
 class TicketStatus(StrEnum):
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     CLOSED = "closed"
+
 
 class TicketCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -19,11 +21,13 @@ class TicketCreate(BaseModel):
     description: str = Field(max_length=2000)
     priority: Priority = Priority.MEDIUM
 
+
 class TicketUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str | None = Field(default=None, min_length=3, max_length=100)
     description: str | None = Field(default=None, max_length=2000)
     priority: Priority | None = None
+
 
 class TicketResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -33,6 +37,7 @@ class TicketResponse(BaseModel):
     description: str
     priority: Priority
     status: TicketStatus
+
 
 class TicketAnalysis(BaseModel):
     category: str

@@ -14,8 +14,7 @@ from schemas import (
 
 
 class AIService(Protocol):
-    def analyze_ticket(self, ticket: TicketResponse) -> TicketAnalysis:
-        ...
+    def analyze_ticket(self, ticket: TicketResponse) -> TicketAnalysis: ...
 
 
 class AIProviderUnavailable(Exception):

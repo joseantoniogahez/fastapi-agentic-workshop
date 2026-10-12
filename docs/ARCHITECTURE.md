@@ -10,7 +10,7 @@ Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
                              Pydantic (schemas.py)
 ```
 
-`schemas.py` define `Priority`, `TicketStatus`, `TicketCreate`, `TicketUpdate` y `TicketResponse`. FastAPI valida el JSON de entrada, serializa las respuestas y genera OpenAPI. Al crear, el servicio asigna `open`; el repositorio inserta el ticket, confirma la transacción y actualiza el objeto con el ID generado. El servicio también permite consultar, editar, cerrar y marcar como eliminado un ticket. El repositorio oculta los tickets eliminados en las consultas. Si no encuentra un ticket, el servicio lanza `TicketNotFound`.
+`schemas.py` define `Priority`, `TicketStatus`, `TicketCreate`, `TicketUpdate`, `TicketResponse` y `TicketAnalysis`. FastAPI valida el JSON de entrada, serializa las respuestas y genera OpenAPI. Al crear, el servicio asigna `open`; el repositorio inserta el ticket, confirma la transacción y actualiza el objeto con el ID generado. El servicio también permite consultar, editar, cerrar y marcar como eliminado un ticket. Para analizarlo, coordina con un servicio Gemini inyectado en el router. El repositorio oculta los tickets eliminados en las consultas. Si no encuentra un ticket, el servicio lanza `TicketNotFound`.
 
 ## Responsabilidades por capa
 
@@ -19,13 +19,14 @@ Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
 | Router | Define rutas, parámetros HTTP, códigos de estado y modelos de respuesta. |
 | Service | Aplica reglas de creación, edición, cierre y eliminación lógica. |
 | Repository | Inserta, consulta, actualiza y marca tickets como eliminados en SQLAlchemy. |
+| AI service | Solicita a Gemini una categoría, prioridad sugerida y resumen; valida la respuesta como `TicketAnalysis`. |
 | Database | Configura el motor SQLite, las sesiones y la creación inicial de tablas. |
 | Schemas | Define enums y modelos Pydantic para entrada y salida. |
 
 ## Errores
 
-Pydantic/FastAPI responde `422` cuando la entrada no cumple el esquema. `TicketNotFound` se define en `app/services.py` y el manejador de `app/main.py` responde `404` con `{"detail": "Ticket <id> not found"}`. Los errores inesperados conservan el manejo predeterminado de FastAPI.
+Pydantic/FastAPI responde `422` cuando la entrada no cumple el esquema. `TicketNotFound` se define en `app/services.py` y el manejador de `app/main.py` responde `404` con `{"detail": "Ticket <id> not found"}`. Gemini no disponible o sin clave produce `503`; una respuesta inválida produce `502`. Los errores inesperados conservan el manejo predeterminado de FastAPI.
 
 ## Límites actuales
 
-Están implementados `GET /health`, `POST /api/v1/tickets`, `GET` y `PATCH /api/v1/tickets/{ticket_id}`, `POST /api/v1/tickets/{ticket_id}/close` y `DELETE /api/v1/tickets/{ticket_id}`. FastAPI inyecta la sesión por petición y reutiliza la misma instancia de servicio entre dependencias de esa petición. No hay endpoint de listado, integración con IA, autenticación, autorización ni observabilidad. Las pruebas están organizadas por servicio, API y repositorio. Las reglas del ciclo de vida están en [DOMAIN.md](DOMAIN.md).
+Están implementados `GET /health`, `POST /api/v1/tickets`, `GET` y `PATCH /api/v1/tickets/{ticket_id}`, `POST /api/v1/tickets/{ticket_id}/close` y `/analyze`, y `DELETE /api/v1/tickets/{ticket_id}`. FastAPI inyecta la sesión por petición y reutiliza la misma instancia de servicio entre dependencias de esa petición. No hay endpoint de listado, autenticación, autorización ni observabilidad. Las pruebas están organizadas por servicio, API y repositorio. Las reglas del ciclo de vida están en [DOMAIN.md](DOMAIN.md).

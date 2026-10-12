@@ -2,7 +2,6 @@ from collections.abc import Callable, Iterator
 
 import pytest
 from fastapi.testclient import TestClient
-
 from main import create_app
 from router import get_ticket_repository
 

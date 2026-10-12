@@ -1,6 +1,4 @@
 import pytest
-
-from main import create_app
 from router import get_ai_service
 from schemas import Priority, TicketAnalysis
 

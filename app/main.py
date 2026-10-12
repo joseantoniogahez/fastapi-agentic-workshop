@@ -32,7 +32,6 @@ def create_app(*, manage_database: bool = True) -> FastAPI:
             content={"detail": f"Ticket {exc.args[0]} not found"},
         )
 
-
     @app.exception_handler(TicketAlreadyClosed)
     def ticket_already_closed_handler(request: Request, exc: TicketAlreadyClosed):
         return JSONResponse(
@@ -57,7 +56,6 @@ def create_app(*, manage_database: bool = True) -> FastAPI:
     @app.get("/health")
     def health():
         return {"status": "ok"}
-
 
     app.include_router(router)
     return app

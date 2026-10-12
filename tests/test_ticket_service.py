@@ -1,7 +1,6 @@
 import pytest
-
 from models import Ticket
-from schemas import Priority, TicketAnalysis
+from schemas import Priority, TicketAnalysis, TicketResponse
 from services import (
     AIProviderUnavailable,
     AIResponseInvalid,
@@ -9,7 +8,6 @@ from services import (
     TicketNotFound,
     TicketService,
 )
-from schemas import TicketResponse
 
 
 class FakeTicketRepository:
@@ -152,7 +150,9 @@ def test_gemini_service_maps_provider_errors():
 def test_gemini_service_rejects_invalid_response():
     class FakeModels:
         def generate_content(self, **kwargs):
-            return type("Response", (), {"parsed": {"category": "auth"}, "text": None})()
+            return type(
+                "Response", (), {"parsed": {"category": "auth"}, "text": None}
+            )()
 
     service = GeminiAIService.__new__(GeminiAIService)
     service.client = type("Client", (), {"models": FakeModels()})()
