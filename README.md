@@ -56,6 +56,8 @@ uv run fastapi dev app/main.py
 
 La API queda disponible en <http://127.0.0.1:8000>. La documentación interactiva está en <http://127.0.0.1:8000/docs>, y el esquema OpenAPI en <http://127.0.0.1:8000/openapi.json>.
 
+Para habilitar el análisis con Gemini, copia `.env.example` a `.env` y asigna tu `GEMINI_API_KEY`. El archivo `.env` está excluido de Git.
+
 ## Pruebas manuales
 
 Comprueba que el servicio está vivo:
