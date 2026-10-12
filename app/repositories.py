@@ -13,4 +13,16 @@ class TicketRepository:
         return ticket
 
     def get(self, ticket_id: int):
-        return self.session.get(Ticket, ticket_id)
+        ticket = self.session.get(Ticket, ticket_id)
+        if ticket is None or ticket.is_deleted:
+            return None
+        return ticket
+
+    def save(self, ticket: Ticket):
+        self.session.commit()
+        self.session.refresh(ticket)
+        return ticket
+
+    def delete(self, ticket: Ticket):
+        ticket.is_deleted = True
+        self.session.commit()

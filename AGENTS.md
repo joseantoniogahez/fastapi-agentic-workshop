@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 ## FastAPI workshop
 
@@ -6,4 +6,5 @@
 - Read the current lesson and `docs/API_GUIDELINES.md` before changing the API.
 - Use Pydantic v2 conventions and keep examples small and explainable.
 - Check behavior with the available tests.
-- Revisa qué documentación queda afectada por cada cambio y actualiza sólo la estrictamente necesaria; mantén la información consistente, mínima y suficiente, evitando redundancias.
+- Organiza las pruebas por nivel en archivos separados: `test_ticket_service.py` para reglas del dominio con repositorios fake, `test_tickets_api.py` para HTTP y coordinación, y `test_ticket_repository.py` para persistencia real con SQLite temporal. Añade pruebas de sistema externo sólo cuando haya un adaptador cuya compatibilidad verificar.
+- Revisa qué documentación queda afectada por cada cambio y actualiza sólo la estrictamente necesaria; mantén la información consistente, mí­nima y suficiente, evitando redundancias.

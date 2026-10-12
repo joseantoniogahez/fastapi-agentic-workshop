@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -14,3 +14,4 @@ class Ticket(Base):
     description: Mapped[str] = mapped_column(String(2000))
     priority: Mapped[str] = mapped_column(String(20), default="medium")
     status: Mapped[str] = mapped_column(String(20), default="open")
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
