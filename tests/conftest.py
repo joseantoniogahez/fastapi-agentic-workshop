@@ -23,6 +23,9 @@ class FakeTicketRepository:
             return None
         return ticket
 
+    def list(self):
+        return [ticket for ticket in self.tickets.values() if not ticket.is_deleted]
+
     def save(self, ticket):
         self.tickets[ticket.id] = ticket
         return ticket

@@ -2,7 +2,7 @@
 
 ## Estado
 
-El repositorio define dependencias y configuración de pytest/Ruff en `pyproject.toml`, pero no contiene configuración de CI, contenedor, manifiestos de despliegue ni procedimiento de rollback. El comando local documentado es `uv run fastapi dev app/main.py`; no es una receta de producción.
+El repositorio declara pytest y Ruff como herramientas de desarrollo/dependencias en `pyproject.toml`, pero no contiene configuración de CI, contenedor, manifiestos de despliegue ni procedimiento de rollback. No hay configuración de Ruff más allá de la dependencia. El comando local documentado es `uv run fastapi dev app/main.py`; no es una receta de producción.
 
 ## Guía para cambios
 

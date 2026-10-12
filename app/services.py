@@ -86,6 +86,9 @@ class TicketService:
             raise TicketNotFound(ticket_id)
         return ticket
 
+    def list(self):
+        return self.repository.list()
+
     def update(self, ticket_id: int, payload: TicketUpdate):
         ticket = self.get(ticket_id)
         if ticket.status == TicketStatus.CLOSED:

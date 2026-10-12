@@ -18,6 +18,14 @@ class TicketRepository:
             return None
         return ticket
 
+    def list(self):
+        return (
+            self.session.query(Ticket)
+            .filter_by(is_deleted=False)
+            .order_by(Ticket.id)
+            .all()
+        )
+
     def save(self, ticket: Ticket):
         self.session.commit()
         self.session.refresh(ticket)

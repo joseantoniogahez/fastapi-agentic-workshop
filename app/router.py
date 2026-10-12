@@ -49,6 +49,13 @@ def get_ticket(
     return service.get(ticket_id)
 
 
+@router.get("", response_model=list[TicketResponse])
+def list_tickets(
+    service: Annotated[TicketService, Depends(get_ticket_service)],
+):
+    return service.list()
+
+
 @router.patch("/{ticket_id}", response_model=TicketResponse)
 def update_ticket(
     ticket_id: int,
