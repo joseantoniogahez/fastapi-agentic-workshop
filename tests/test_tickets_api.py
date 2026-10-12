@@ -1,5 +1,9 @@
 import pytest
 
+from main import create_app
+from router import get_ai_service
+from schemas import Priority, TicketAnalysis
+
 
 def test_create_ticket(client):
     response = client.post(
@@ -128,3 +132,63 @@ def test_unknown_priority_returns_422(client):
     )
 
     assert response.status_code == 422
+
+
+class FakeAIService:
+    def analyze_ticket(self, ticket):
+        assert ticket.title == "Unable to log in"
+        return TicketAnalysis(
+            category="authentication",
+            suggested_priority=Priority.HIGH,
+            summary="The user cannot authenticate.",
+        )
+
+
+def test_analyze_ticket_returns_ai_analysis(client_factory):
+    app_client = client_factory()
+    app = app_client.app
+    app.dependency_overrides[get_ai_service] = FakeAIService
+
+    created = app_client.post(
+        "/api/v1/tickets",
+        json={"title": "Unable to log in", "description": "Login fails"},
+    ).json()
+
+    response = app_client.post(
+        f"/api/v1/tickets/{created['id']}/analyze",
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "category": "authentication",
+        "suggested_priority": "high",
+        "summary": "The user cannot authenticate.",
+    }
+
+
+def test_analyze_missing_ticket_returns_404(client_factory):
+    app_client = client_factory()
+    app = app_client.app
+    app.dependency_overrides[get_ai_service] = FakeAIService
+
+    response = app_client.post("/api/v1/tickets/999/analyze")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Ticket 999 not found"}
+
+
+def test_analysis_schema_rejects_long_summary():
+    with pytest.raises(ValueError):
+        TicketAnalysis(
+            category="authentication",
+            suggested_priority=Priority.HIGH,
+            summary="x" * 501,
+        )
+
+
+def test_analyze_without_api_key_returns_503(client, monkeypatch):
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    response = client.post("/api/v1/tickets/1/analyze")
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Gemini API key is not configured"}
