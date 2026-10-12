@@ -1,26 +1,28 @@
 # Arquitectura de SupportDesk
 
-La aplicación es un monolito FastAPI pequeño. Las rutas, la lógica de creación y el almacenamiento temporal están en `app/main.py`; los contratos están en `app/schemas.py`.
+La aplicación es un monolito FastAPI pequeño. `app/main.py` crea la aplicación, registra `/health` e incluye el router de tickets. El router define el contrato HTTP; service y repository coordinan la creación, y SQLAlchemy persiste los tickets en SQLite. Los contratos HTTP están en `app/schemas.py`.
 
 ```text
-Cliente HTTP → FastAPI (main.py) → lista en memoria
-                         ↓
-                  Pydantic (schemas.py)
+Cliente HTTP → FastAPI (main.py) → Router (/api/v1/tickets)
+                                      ↓
+                           Service → Repository → SQLite
+                                      ↑
+                             Pydantic (schemas.py)
 ```
 
-`main.py` crea la aplicación y registra endpoints. `schemas.py` define `Priority`, `TicketStatus`, `TicketCreate` y `TicketResponse`. FastAPI convierte JSON, valida, serializa y genera OpenAPI. La lista global simplifica el aprendizaje del flujo request → validación → lógica → respuesta, pero no es almacenamiento de producción.
+`schemas.py` define `Priority`, `TicketStatus`, `TicketCreate` y `TicketResponse`. FastAPI convierte JSON, valida, serializa y genera OpenAPI. `POST /api/v1/tickets` valida la entrada, el service asigna `open`, el repository inserta y confirma la transacción, y la base de datos devuelve el identificador generado.
 
 ## Responsabilidades por capa
 
-Al evolucionar la aplicación, cada capa tendrá una responsabilidad concreta:
+Cada capa tiene una responsabilidad concreta:
 
 | Capa | Responsabilidad | Ejemplo |
 |---|---|---|
-| Router | Manejar HTTP y definir contratos: body, path y status code. | Recibir `PATCH /tickets/{id}` y responder con el modelo declarado. |
+| Router | Manejar HTTP y definir contratos: body, path y status code. | Recibir `POST /api/v1/tickets` y responder con el modelo declarado. |
 | Service | Aplicar reglas del negocio. | Rechazar la edición de un ticket cerrado. |
 | Repository | Leer y guardar datos. | Buscar un ticket e insertar o actualizar sus datos. |
-| Database | Persistir datos y aplicar restricciones. | Definir `id` como clave, y restricciones `NOT NULL` y `UNIQUE`. |
+| Database | Crear y mantener la conexión y el esquema persistente. | Crear la tabla `tickets` en SQLite. |
 
-Estas capas describen la dirección de evolución, no la estructura implementada hoy: actualmente las rutas, la lógica de creación y la lista en memoria están en `app/main.py`, sin service, repository ni database separados.
+La implementación actual cubre sólo creación de tickets: todavía no ofrece listados, lecturas por identificador, edición ni borrado. `get_session()` está disponible en `app/database.py`, pero el router abre la sesión directamente con `Session(engine)`; no usa esa función como dependencia FastAPI.
 
-La evolución esperada es extraer servicio y repositorio, generar identificadores, añadir persistencia, autenticación, autorización, observabilidad y pruebas. La capa de dominio deberá proteger el cierre irreversible y aplicar las invariantes descritas en `DOMAIN.md`: un ticket cerrado no puede editarse, reabrirse ni recibir soft delete. `DELETE` conservará los demás tickets, los excluirá de las consultas operativas y los dejará disponibles únicamente para histórico o análisis de la IA.
+La autenticación, autorización, observabilidad y pruebas siguen pendientes. Si se agregan operaciones de edición o borrado, la capa de dominio deberá aplicar las invariantes descritas en `DOMAIN.md`.
