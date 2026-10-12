@@ -66,7 +66,7 @@ curl http://127.0.0.1:8000/health
 
 Respuesta: `{\"status\":\"ok\"}`
 
-Consulta los tickets:
+Crea un ticket:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/tickets `
@@ -76,17 +76,25 @@ curl -X POST http://127.0.0.1:8000/api/v1/tickets `
 
 La respuesta de creación tiene estado `201 Created` e incluye el `id` generado, la prioridad `medium` y el estado inicial `open`. Para otros ejemplos y las reglas del contrato, consulta [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md).
 
+Puedes consultar el ticket usando el `id` devuelto:
+
+```bash
+curl http://127.0.0.1:8000/api/v1/tickets/1
+```
+
+La consulta devuelve `200 OK`, o `404 Not Found` si el ID no existe. Los tickets permanecen en `supportdesk.db` en el directorio desde el que se inicia la aplicación.
+
 ## Estructura
 
 ```text
 app/
-├── main.py       # aplicación FastAPI y health check
-├── router.py     # endpoint HTTP de tickets
-├── services.py  # regla de creación y estado inicial
-├── repositories.py # persistencia de tickets
-├── models.py    # modelo SQLAlchemy
-├── database.py  # motor y sesión SQLite
-└── schemas.py   # enums y modelos Pydantic
+├── main.py        # aplicación FastAPI, health check y manejador 404
+├── router.py      # endpoints HTTP de tickets
+├── services.py    # lógica de creación y consulta
+├── repositories.py # acceso a datos
+├── models.py      # modelo SQLAlchemy
+├── database.py    # motor y sesiones SQLite
+└── schemas.py     # enums y modelos Pydantic
 docs/             # documentación de dominio, arquitectura, API y curso
 ```
 

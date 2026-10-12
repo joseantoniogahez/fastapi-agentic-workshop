@@ -1,15 +1,23 @@
 # Convenciones de la API
 
-- El health check está en `GET /health`. Las rutas de tickets usan el prefijo de versión `/api/v1/tickets`; la creación actual está disponible en `POST /api/v1/tickets`.
-- Los cuerpos usan JSON y nombres `snake_case`, por ejemplo `in_progress`.
-- `POST /api/v1/tickets` usa `201 Created` cuando es válido y devuelve `TicketResponse`, con `id` entero generado por la base de datos, `title`, `description`, `priority` y `status`.
-- Pydantic valida longitudes, enums y campos extra; las entradas inválidas producen `422`.
-- Las respuestas deben declarar `response_model` para que el contrato aparezca en OpenAPI.
-- `DELETE /tickets/{id}` implementa soft delete, nunca borrado físico, y debe rechazar tickets cuyo estado sea `closed`.
-- Los tickets eliminados lógicamente deben quedar ocultos para listados, búsquedas y lecturas operativas; sólo podrán incluirse en endpoints o procesos explícitos de histórico y análisis de IA.
-- Al crear, `status` no se recibe en el body: el service asigna `open`. `priority` es opcional y por defecto `medium`.
-- La creación persiste el ticket en SQLite mediante SQLAlchemy. El modelo de base de datos limita `title` a 100, `description` a 2000 y almacena `priority` y `status` como cadenas de hasta 20 caracteres; los enums y longitudes del contrato HTTP se validan en Pydantic.
-- Las operaciones de edición y reapertura deben rechazar tickets cerrados.
-- Los cambios de nombres, enums, obligatoriedad o semántica de campos son cambios de contrato y deben documentarse.
+## Contrato implementado
 
-Alcance actual: sólo está implementado `POST /api/v1/tickets` además de `GET /health`. No hay actualmente endpoints de listado, lectura, edición o borrado de tickets; las reglas para esas operaciones documentadas aquí son requisitos de dominio para cuando se implementen.
+- `GET /health` devuelve `{"status": "ok"}`.
+- Los endpoints de tickets usan el prefijo `/api/v1/tickets` y cuerpos JSON con nombres `snake_case`.
+- `POST /api/v1/tickets` crea un ticket y devuelve `201 Created` con `TicketResponse`: `id`, `title`, `description`, `priority` y `status`.
+- En la creación, `title` debe tener entre 3 y 100 caracteres; `description` admite hasta 2000. `priority` puede ser `low`, `medium` o `high` y por defecto es `medium`. `status` no se acepta en el cuerpo: comienza como `open`.
+- `GET /api/v1/tickets/{ticket_id}` devuelve `TicketResponse` con `200 OK`; si no existe el ID, devuelve `404` y `{"detail": "Ticket <id> not found"}`.
+- Pydantic rechaza campos adicionales, valores de enum desconocidos y longitudes fuera de los límites; FastAPI responde `422`.
+- Los modelos de respuesta se declaran con `response_model` para exponer el contrato en OpenAPI.
+- Los tickets se persisten en SQLite mediante SQLAlchemy. El ID lo genera la base de datos.
+
+## Reglas para cambios futuros
+
+Las reglas siguientes son requisitos de dominio, no endpoints actualmente disponibles:
+
+- Si se agrega `DELETE`, debe ser soft delete y rechazar tickets cerrados. Los tickets eliminados deben quedar ocultos en operaciones ordinarias; sólo se incluyen en operaciones explícitas de histórico o análisis.
+- Las operaciones futuras de edición no deben permitir modificar ni reabrir tickets cerrados.
+- Si se agrega integración con IA, una dependencia no disponible puede responder `503` y una respuesta inválida `502`; esos errores no deben confundirse con errores de dominio.
+- Todo cambio en rutas, nombres, enums, obligatoriedad o semántica de campos debe actualizar esta guía y los esquemas OpenAPI generados por la aplicación.
+
+El alcance implementado es `GET /health`, `POST /api/v1/tickets` y `GET /api/v1/tickets/{ticket_id}`. No existen endpoints de listado, edición, cierre ni borrado.
