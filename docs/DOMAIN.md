@@ -18,6 +18,8 @@ Todo ticket nuevo comienza en `open`. El contrato de creación no permite enviar
 
 Los tickets se guardan en SQLite mediante SQLAlchemy. Se pueden crear, consultar, editar, cerrar y eliminar lógicamente; no hay endpoint de listado, autenticación ni aislamiento entre usuarios. El repositorio oculta los tickets eliminados en las consultas operativas.
 
+Un ticket existente puede analizarse con IA para obtener una categoría, una prioridad sugerida y un resumen. El análisis no modifica el ticket. La integración usa Gemini y requiere `GEMINI_API_KEY`; los fallos del proveedor o una respuesta inválida se exponen como errores de API.
+
 1. Un ticket cerrado no se puede editar ni reabrir.
 2. `DELETE` realiza soft delete, nunca borrado físico, y no permite eliminar tickets cerrados.
 3. Los tickets eliminados quedan ocultos en lecturas operativas; se conservan en la base de datos para histórico.

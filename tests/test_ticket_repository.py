@@ -1,8 +1,7 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from models import Base, Ticket
 from repositories import TicketRepository
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 def test_repository_persists_ticket_in_sqlite(tmp_path):

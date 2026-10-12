@@ -8,6 +8,7 @@ dependencies = [
     "fastapi[standard]==0.142.2",
     "google-genai>=1.0.0",
     "python-dotenv>=1.2.4",
+    "ruff>=0.17.0",
     "sqlalchemy==2.1.3",
 ]
 

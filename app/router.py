@@ -33,8 +33,7 @@ def get_ai_service() -> GeminiAIService:
     return GeminiAIService(api_key)
 
 
-@router.post("", response_model=TicketResponse,
-             status_code=201)
+@router.post("", response_model=TicketResponse, status_code=201)
 def create_ticket(
     payload: TicketCreate,
     service: Annotated[TicketService, Depends(get_ticket_service)],
