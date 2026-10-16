@@ -20,6 +20,8 @@ class TicketCreate(BaseModel):
     priority: Priority = Priority.MEDIUM
 
 class TicketResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     description: str

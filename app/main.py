@@ -1,7 +1,13 @@
+from database import create_tables
 from fastapi import FastAPI
 from routers.tickets import router as tickets_router
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def startup():
+    create_tables()
 
 
 @app.get("/health")

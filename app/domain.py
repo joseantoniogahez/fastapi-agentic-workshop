@@ -4,20 +4,12 @@ from schemas import Priority, TicketCreate, TicketStatus
 
 
 @dataclass
-class Ticket:
+class TicketData:
     title: str
     description: str
     priority: Priority
     status: TicketStatus = TicketStatus.OPEN
 
     @classmethod
-    def create(cls, payload: TicketCreate) -> "Ticket":
+    def create(cls, payload: TicketCreate) -> "TicketData":
         return cls(**payload.model_dump(), status=TicketStatus.OPEN)
-
-    def to_response(self) -> dict:
-        return {
-            "title": self.title,
-            "description": self.description,
-            "priority": self.priority,
-            "status": self.status,
-        }

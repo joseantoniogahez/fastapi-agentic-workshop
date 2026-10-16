@@ -1,13 +1,10 @@
 # Convenciones de la API
 
-- Las rutas usan sustantivos plurales y minúsculas: `GET /health`, `POST /tickets` y `GET /tickets`.
+- Las rutas usan sustantivos plurales y minúsculas: `GET /health` y los endpoints de tickets bajo `/api/v1/tickets`.
 - Los cuerpos usan JSON y nombres `snake_case`, por ejemplo `in_progress`.
-- `POST /tickets` usa `201 Created` cuando es válido.
+- `POST /api/v1/tickets` valida el cuerpo con Pydantic, crea el ticket con estado `open`, lo guarda en SQLite y responde `201 Created` con `TicketResponse` e ID autogenerado.
 - Pydantic valida longitudes, enums y campos extra; las entradas inválidas producen `422`.
 - Las respuestas deben declarar `response_model` para que el contrato aparezca en OpenAPI.
-- `DELETE /tickets/{id}` implementa soft delete, nunca borrado físico, y debe rechazar tickets cuyo estado sea `closed`.
-- Los tickets eliminados lógicamente deben quedar ocultos para listados, búsquedas y lecturas operativas; sólo podrán incluirse en endpoints o procesos explícitos de histórico y análisis de IA.
-- Las operaciones de edición y reapertura deben rechazar tickets cerrados.
+- `GET /api/v1/tickets` lista los tickets almacenados en SQLite.
+- `DELETE /api/v1/tickets/{id}` y las operaciones de edición/cierre no están implementadas.
 - Los cambios de nombres, enums, obligatoriedad o semántica de campos son cambios de contrato y deben documentarse.
-
-Deuda conocida del checkpoint: `POST /tickets` declara `TicketResponse`, pero todavía no genera el `id` requerido.

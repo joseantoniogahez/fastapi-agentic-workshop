@@ -1,6 +1,6 @@
 # SupportDesk API
 
-SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. El repositorio se encuentra en una etapa temprana: los tickets viven en memoria y todavía no hay persistencia, autenticación ni suite de pruebas automatizadas.
+SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La creación de tickets persiste en SQLite; autenticación y una suite de pruebas automatizadas todavía no están implementadas.
 
 ## Requisitos
 
@@ -66,20 +66,33 @@ curl http://127.0.0.1:8000/health
 
 Respuesta: `{\"status\":\"ok\"}`
 
-Consulta los tickets:
+Consulta los tickets guardados en SQLite:
 
 ```bash
-curl http://127.0.0.1:8000/tickets
+curl http://127.0.0.1:8000/api/v1/tickets
 ```
 
-La creación de tickets está definida con validación de entrada. En el estado actual, `POST /tickets` aún no genera el campo `id` que exige `TicketResponse`; ese flujo puede producir un error de validación hasta que se implemente la asignación de identificadores.
+Para crear un ticket, envía JSON a `POST /api/v1/tickets`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/tickets \
+  -H "Content-Type: application/json" \
+  -d '{"title":"No puedo iniciar sesión","description":"La aplicación rechaza mi contraseña","priority":"high"}'
+```
+
+La respuesta es `201 Created`, incluye un ID autogenerado y el estado inicial `open`. SQLite usa `supportdesk.db` en el directorio de ejecución y la tabla se crea al iniciar la aplicación. No hay migraciones.
 
 ## Estructura
 
 ```text
 app/
-├── main.py       # aplicación FastAPI y endpoints
-└── schemas.py    # enums y modelos Pydantic
+├── main.py       # aplicación FastAPI y registro de rutas
+├── database.py   # engine SQLite y sesiones
+├── models.py     # modelo ORM Ticket
+├── repositories/ # acceso de creación a SQLite
+├── routers/      # endpoints HTTP
+├── services/     # coordinación de casos de uso
+└── schemas.py    # enums y contratos Pydantic
 docs/             # documentación de dominio, arquitectura, API y curso
 ```
 

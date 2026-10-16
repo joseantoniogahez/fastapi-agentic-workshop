@@ -1,18 +1,30 @@
-from fastapi import APIRouter
-from repositories.tickets import InMemoryTicketRepository
+from database import SessionLocal
+from fastapi import APIRouter, Depends
+from repositories.tickets import TicketRepository
 from schemas import TicketCreate, TicketResponse
 from services.tickets import TicketService
+from sqlalchemy.orm import Session
 
 router = APIRouter()
-repository = InMemoryTicketRepository()
-service = TicketService(repository)
+
+
+def get_session():
+    with SessionLocal() as session:
+        yield session
+
+
+def get_service(session: Session = Depends(get_session)) -> TicketService:
+    return TicketService(TicketRepository(session))
 
 
 @router.post("", response_model=TicketResponse, status_code=201)
-def create_ticket(payload: TicketCreate):
-    return service.create(payload).to_response()
+def create_ticket(
+    payload: TicketCreate,
+    service: TicketService = Depends(get_service),
+):
+    return service.create(payload)
 
 
-@router.get("")
-def list_tickets():
-    return [ticket.to_response() for ticket in service.list()]
+@router.get("", response_model=list[TicketResponse])
+def list_tickets(service: TicketService = Depends(get_service)):
+    return service.list()
