@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from database import Base
 from schemas import Priority, TicketStatus
+from sqlalchemy import DateTime
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -17,3 +20,4 @@ class Ticket(Base):
     status: Mapped[TicketStatus] = mapped_column(
         SqlEnum(TicketStatus, native_enum=False), nullable=False
     )
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

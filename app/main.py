@@ -1,5 +1,5 @@
 from database import create_tables
-from domain import TicketNotFound
+from domain import TicketConflict, TicketNotFound
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from routers.tickets import router as tickets_router
@@ -12,6 +12,20 @@ async def ticket_not_found_handler(request: Request, exc: TicketNotFound):
     return JSONResponse(
         status_code=404,
         content={"detail": {"code": "ticket_not_found", "ticket_id": exc.ticket_id}},
+    )
+
+
+@app.exception_handler(TicketConflict)
+async def ticket_conflict_handler(request: Request, exc: TicketConflict):
+    return JSONResponse(
+        status_code=409,
+        content={
+            "detail": {
+                "code": "ticket_conflict",
+                "ticket_id": exc.ticket_id,
+                "operation": exc.operation,
+            }
+        },
     )
 
 

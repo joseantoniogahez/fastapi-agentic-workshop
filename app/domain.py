@@ -9,6 +9,13 @@ class TicketNotFound(Exception):
         super().__init__(f"Ticket {ticket_id} was not found")
 
 
+class TicketConflict(Exception):
+    def __init__(self, ticket_id: int, operation: str) -> None:
+        self.ticket_id = ticket_id
+        self.operation = operation
+        super().__init__(f"Cannot {operation} closed ticket {ticket_id}")
+
+
 @dataclass
 class TicketData:
     title: str

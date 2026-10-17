@@ -1,7 +1,7 @@
-from domain import TicketData, TicketNotFound
+from domain import TicketConflict, TicketData, TicketNotFound
 from models import Ticket
 from repositories.tickets import TicketRepository
-from schemas import TicketCreate
+from schemas import TicketCreate, TicketStatus, TicketUpdate
 
 
 class TicketService:
@@ -19,3 +19,21 @@ class TicketService:
         if ticket is None:
             raise TicketNotFound(ticket_id)
         return ticket
+
+    def update(self, ticket_id: int, payload: TicketUpdate) -> Ticket:
+        ticket = self.get(ticket_id)
+        if ticket.status == TicketStatus.CLOSED:
+            raise TicketConflict(ticket_id, "update")
+        return self._repository.update(ticket, payload.model_dump(exclude_unset=True))
+
+    def close(self, ticket_id: int) -> Ticket:
+        ticket = self.get(ticket_id)
+        if ticket.status == TicketStatus.CLOSED:
+            raise TicketConflict(ticket_id, "close")
+        return self._repository.close(ticket)
+
+    def delete(self, ticket_id: int) -> None:
+        ticket = self.get(ticket_id)
+        if ticket.status == TicketStatus.CLOSED:
+            raise TicketConflict(ticket_id, "delete")
+        self._repository.delete(ticket)

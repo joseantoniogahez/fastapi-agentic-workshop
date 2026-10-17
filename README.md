@@ -1,6 +1,6 @@
 # SupportDesk API
 
-SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. La creación de tickets persiste en SQLite; autenticación y una suite de pruebas automatizadas todavía no están implementadas.
+SupportDesk es un proyecto didáctico para construir una API de soporte con FastAPI. Los tickets persisten en SQLite; autenticación y migraciones todavía no están implementadas.
 
 ## Requisitos
 
@@ -82,7 +82,9 @@ curl -X POST http://127.0.0.1:8000/api/v1/tickets \
 
 La respuesta es `201 Created`, incluye un ID autogenerado y el estado inicial `open`. SQLite usa `supportdesk.db` en el directorio de ejecución y la tabla se crea al iniciar la aplicación. No hay migraciones.
 
-Las rutas de tickets disponibles son `POST /api/v1/tickets` (crear), `GET /api/v1/tickets` (listar) y `GET /api/v1/tickets/{ticket_id}` (consultar). La consulta individual responde con `TicketResponse`; un ID inexistente produce `404` con `{"detail":{"code":"ticket_not_found","ticket_id":1}}` (el ID refleja la solicitud). Los errores de validación mantienen el `422` estándar de FastAPI. Actualización, cierre y eliminación no están implementados.
+Las rutas disponibles permiten crear (`POST /api/v1/tickets`), listar (`GET /api/v1/tickets`), consultar (`GET /api/v1/tickets/{ticket_id}`), actualizar parcialmente (`PATCH /api/v1/tickets/{ticket_id}`), cerrar (`POST /api/v1/tickets/{ticket_id}/close`) y eliminar lógicamente (`DELETE /api/v1/tickets/{ticket_id}`). Actualización y cierre responden con `TicketResponse`; el borrado responde `204` sin cuerpo. IDs inexistentes o eliminados responden `404`; editar o eliminar un ticket cerrado responde `409`. Los errores de validación conservan `422`. El borrado oculta el ticket de consultas y listados, pero conserva su fila en SQLite.
+
+Ejecuta la suite con `uv run pytest` (o instala `requirements.txt` y ejecuta `pytest`). Las pruebas separan reglas de servicio, contrato HTTP y persistencia SQLite temporal.
 
 ## Estructura
 

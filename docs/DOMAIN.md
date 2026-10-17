@@ -4,7 +4,7 @@
 
 Un ticket representa una solicitud de soporte. Tiene `title` (3–100 caracteres), `description` (hasta 2000), `priority` (`low`, `medium` o `high`, por defecto `medium`), `status` e `id`.
 
-## Estados
+## Estados y ciclo de vida
 
 | Estado | Significado |
 |---|---|
@@ -12,10 +12,8 @@ Un ticket representa una solicitud de soporte. Tiene `title` (3–100 caracteres
 | `in_progress` | Ticket que está siendo atendido. |
 | `closed` | Ticket cuya atención terminó. |
 
-Todo ticket nuevo comienza en `open`. Las siguientes invariantes gobiernan su ciclo de vida:
-
-Los estados describen el ciclo de vida previsto; no hay operaciones implementadas para editar, cerrar ni eliminar tickets.
+Todo ticket nuevo comienza en `open`. Se puede actualizar parcialmente el título, la descripción o la prioridad, y se puede cerrar explícitamente. Un ticket cerrado no se puede editar ni eliminar. El borrado es lógico: conserva la fila con `deleted_at` y oculta el ticket de consultas y listados operativos.
 
 ## Reglas
 
-El contrato rechaza campos adicionales (`extra="forbid"`) y valores de prioridad o estado fuera de los enums. Los tickets se persisten en SQLite. La API permite crear, listar y consultar por ID; una consulta inexistente produce `TicketNotFound`, que se representa como HTTP `404`. No hay migraciones, actualización, cierre, borrado ni aislamiento entre usuarios.
+Pydantic rechaza campos adicionales y valores de prioridad fuera del enum. `PATCH` requiere al menos un campo permitido. Los IDs inexistentes o eliminados producen `404`; editar o eliminar un ticket cerrado produce `409`. `DELETE` responde `204` sin cuerpo. Los tickets se persisten en SQLite. No hay migraciones ni aislamiento entre usuarios.
