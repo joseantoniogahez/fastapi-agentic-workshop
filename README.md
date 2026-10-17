@@ -82,6 +82,8 @@ curl -X POST http://127.0.0.1:8000/api/v1/tickets \
 
 La respuesta es `201 Created`, incluye un ID autogenerado y el estado inicial `open`. SQLite usa `supportdesk.db` en el directorio de ejecución y la tabla se crea al iniciar la aplicación. No hay migraciones.
 
+Las rutas de tickets disponibles son `POST /api/v1/tickets` (crear), `GET /api/v1/tickets` (listar) y `GET /api/v1/tickets/{ticket_id}` (consultar). La consulta individual responde con `TicketResponse`; un ID inexistente produce `404` con `{"detail":{"code":"ticket_not_found","ticket_id":1}}` (el ID refleja la solicitud). Los errores de validación mantienen el `422` estándar de FastAPI. Actualización, cierre y eliminación no están implementados.
+
 ## Estructura
 
 ```text
@@ -89,7 +91,7 @@ app/
 ├── main.py       # aplicación FastAPI y registro de rutas
 ├── database.py   # engine SQLite y sesiones
 ├── models.py     # modelo ORM Ticket
-├── repositories/ # acceso de creación a SQLite
+├── repositories/ # acceso de tickets a SQLite
 ├── routers/      # endpoints HTTP
 ├── services/     # coordinación de casos de uso
 └── schemas.py    # enums y contratos Pydantic

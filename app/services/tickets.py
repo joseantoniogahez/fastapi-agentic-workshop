@@ -1,4 +1,4 @@
-from domain import TicketData
+from domain import TicketData, TicketNotFound
 from models import Ticket
 from repositories.tickets import TicketRepository
 from schemas import TicketCreate
@@ -13,3 +13,9 @@ class TicketService:
 
     def list(self) -> list[Ticket]:
         return self._repository.list()
+
+    def get(self, ticket_id: int) -> Ticket:
+        ticket = self._repository.get(ticket_id)
+        if ticket is None:
+            raise TicketNotFound(ticket_id)
+        return ticket

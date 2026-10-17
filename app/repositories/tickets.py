@@ -1,6 +1,7 @@
 from domain import TicketData
 from models import Ticket
 from sqlalchemy.orm import Session
+from typing import Optional
 
 
 class TicketRepository:
@@ -16,3 +17,6 @@ class TicketRepository:
 
     def list(self) -> list[Ticket]:
         return list(self._session.query(Ticket).all())
+
+    def get(self, ticket_id: int) -> Optional[Ticket]:
+        return self._session.get(Ticket, ticket_id)

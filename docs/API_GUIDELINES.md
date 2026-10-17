@@ -6,5 +6,7 @@
 - Pydantic valida longitudes, enums y campos extra; las entradas inválidas producen `422`.
 - Las respuestas deben declarar `response_model` para que el contrato aparezca en OpenAPI.
 - `GET /api/v1/tickets` lista los tickets almacenados en SQLite.
+- `GET /api/v1/tickets/{ticket_id}` devuelve el ticket almacenado con ese ID usando `TicketResponse`; si no existe, responde `404` con `{"detail":{"code":"ticket_not_found","ticket_id":<id>}}`.
+- Los errores de validación de FastAPI conservan su respuesta `422`.
 - `DELETE /api/v1/tickets/{id}` y las operaciones de edición/cierre no están implementadas.
 - Los cambios de nombres, enums, obligatoriedad o semántica de campos son cambios de contrato y deben documentarse.

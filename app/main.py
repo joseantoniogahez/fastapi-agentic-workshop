@@ -1,8 +1,18 @@
 from database import create_tables
-from fastapi import FastAPI
+from domain import TicketNotFound
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from routers.tickets import router as tickets_router
 
 app = FastAPI()
+
+
+@app.exception_handler(TicketNotFound)
+async def ticket_not_found_handler(request: Request, exc: TicketNotFound):
+    return JSONResponse(
+        status_code=404,
+        content={"detail": {"code": "ticket_not_found", "ticket_id": exc.ticket_id}},
+    )
 
 
 @app.on_event("startup")

@@ -28,3 +28,8 @@ def create_ticket(
 @router.get("", response_model=list[TicketResponse])
 def list_tickets(service: TicketService = Depends(get_service)):
     return service.list()
+
+
+@router.get("/{ticket_id}", response_model=TicketResponse)
+def get_ticket(ticket_id: int, service: TicketService = Depends(get_service)):
+    return service.get(ticket_id)
