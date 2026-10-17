@@ -100,3 +100,7 @@ Para salir del entorno virtual cuando termines:
 ```bash
 deactivate
 ```
+
+Presentación
+[FastAPI-Production-Ready.pdf](https://github.com/user-attachments/files/33597319/FastAPI-Production-Ready.pdf)
+
